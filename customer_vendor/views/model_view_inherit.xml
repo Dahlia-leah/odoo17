@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_id']" position="attributes">
-                    <attribute name="domain">[('customer_rank', '>', 0)]</attribute>  <!-- Use customer_rank -->
+                    <attribute name="domain">[('customer_rank', '>', 0)]</attribute> <!-- Filter for customers -->
                     <attribute name="context">{'partner_type_filter': 'customer', 'search_more': False}</attribute>
                 </xpath>
             </field>
@@ -20,7 +20,7 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_id']" position="attributes">
-                    <attribute name="domain">[('supplier_rank', '>', 0)]</attribute>  <!-- Use supplier_rank -->
+                    <attribute name="domain">[('supplier_rank', '>', 0)]</attribute> <!-- Filter for vendors -->
                     <attribute name="context">{'partner_type_filter': 'vendor', 'search_more': False}</attribute>
                 </xpath>
             </field>
@@ -32,51 +32,63 @@
             <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
-                  <xpath expr="//field[@name='partner_id']" position="attributes">
-                    <attribute name="domain">[('supplier_rank', '>', 0)]</attribute>  <!-- Use supplier_rank -->
-                    <attribute name="context">{'partner_type_filter': 'vendor', 'search_more': False}</attribute>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- Inherit the account move form (Invoices/Bills) and filter partner_id for vendors -->
-        <record id="view_payment_form_inherit_customer_filter" model="ir.ui.view">
-            <field name="name">account.payment.form.inherit.customer.filter</field>
-            <field name="model">account.payment</field>
-            <field name="inherit_id" ref="account.view_account_payment_form"/>
-            <field name="arch" type="xml">
-              <xpath expr="//field[@name='partner_id']" position="attributes">
-                    <attribute name="domain">[('customer_rank', '>', 0)]</attribute>  <!-- Use customer_rank -->
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="domain">[('customer_rank', '>', 0)]</attribute> <!-- Filter for customers -->
                     <attribute name="context">{'partner_type_filter': 'customer', 'search_more': False}</attribute>
                 </xpath>
             </field>
         </record>
 
-        <!-- Inherit the purchase order form and filter partner_id for vendors -->
+        <!-- Inherit the account payment form and filter partner_id for customers -->
+        <record id="view_payment_form_inherit_customer_filter" model="ir.ui.view">
+            <field name="name">account.payment.form.inherit.customer.filter</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="domain">[('customer_rank', '>', 0)]</attribute> <!-- Filter for customers -->
+                    <attribute name="context">{'partner_type_filter': 'customer', 'search_more': False}</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Inherit the account payment form and filter partner_id for vendors -->
         <record id="view_payment_form_inherit_vendor_filter" model="ir.ui.view">
             <field name="name">account.payment.form.inherit.vendor.filter</field>
             <field name="model">account.payment</field>
             <field name="inherit_id" ref="account.view_account_payment_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_id']" position="attributes">
-                    <attribute name="domain">[('supplier_rank', '>', 0)]</attribute>  <!-- Use supplier_rank -->
+                    <attribute name="domain">[('supplier_rank', '>', 0)]</attribute> <!-- Filter for vendors -->
                     <attribute name="context">{'partner_type_filter': 'vendor', 'search_more': False}</attribute>
                 </xpath>
             </field>
         </record>
-<record id="view_crm_lead_view_form_inherit_filter" model="ir.ui.view">
-    <field name="name">crm.lead.view.form.inherit.filter</field>
-    <field name="model">crm.lead</field>
-    <field name="inherit_id" ref="crm.crm_lead_view_form"/>
-    <field name="arch" type="xml">
-        <xpath expr="//field[@name='partner_id']" position="attributes">
-            <attribute name="domain">[('id', '!=', False)]</attribute>  <!-- Simple domain to show all partners -->
-            <attribute name="context">{'partner_type_filter': 'customer', 'search_more': False}</attribute>
-        </xpath>
-    </field>
-</record>
 
-
-
+        <!-- Inherit the CRM lead form and allow all partners -->
+        <record id="view_crm_lead_view_form_inherit_filter" model="ir.ui.view">
+            <field name="name">crm.lead.view.form.inherit.filter</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="domain">[('supplier_rank', '>', 0)]</attribute> <!-- Show all partners -->
+                    <attribute name="context">{'partner_type_filter': 'customer', 'search_more': False}</attribute>
+                </xpath>
+            </field>
+        </record>
+         <!-- Inherit the res.partner Kanban view to add filters -->
+        <record id="view_partner_kanban_inherit_filter" model="ir.ui.view">
+            <field name="name">res.partner.kanban.inherit.filter</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='partner_kanban']" position="after">
+                    <filter name="filter_customers" string="Customers" domain="[('customer_rank', '>', 0)]"/>
+                    <filter name="filter_vendors" string="Vendors" domain="[('supplier_rank', '>', 0)]"/>
+                    <filter name="filter_both" string="Both" domain="[('customer_rank', '>', 0), ('supplier_rank', '>', 0)]"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
