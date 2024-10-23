@@ -77,18 +77,6 @@
                 </xpath>
             </field>
         </record>
-         <!-- Inherit the res.partner Kanban view to add filters -->
-        <record id="view_partner_kanban_inherit_filter" model="ir.ui.view">
-            <field name="name">res.partner.kanban.inherit.filter</field>
-            <field name="model">res.partner</field>
-            <field name="inherit_id" ref="base.view_partner_kanban"/>
-            <field name="arch" type="xml">
-                <xpath expr="//filter[@name='partner_kanban']" position="after">
-                    <filter name="filter_customers" string="Customers" domain="[('customer_rank', '>', 0)]"/>
-                    <filter name="filter_vendors" string="Vendors" domain="[('supplier_rank', '>', 0)]"/>
-                    <filter name="filter_both" string="Both" domain="[('customer_rank', '>', 0), ('supplier_rank', '>', 0)]"/>
-                </xpath>
-            </field>
-        </record>
+        
     </data>
 </odoo>
